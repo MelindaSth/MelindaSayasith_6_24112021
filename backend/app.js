@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
+const cors = require('cors');
 
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauces');
@@ -21,6 +22,7 @@ mongoose.connect('mongodb+srv://Melinda-Code:JadoreMango11@cluster0.n1irv.mongod
   next();
 });
 
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
