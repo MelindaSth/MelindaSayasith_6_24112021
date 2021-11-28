@@ -1,15 +1,21 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const cors = require('cors');
+
 
 const userRoutes = require('./routes/user');
 const sauceRoutes = require('./routes/sauces');
 
 const app = express();
 
-mongoose.connect('mongodb+srv://Melinda-Code:JadoreMango11@cluster0.n1irv.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect(process.env.MONGO_URI,
     { useNewUrlParser: true,
       useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
