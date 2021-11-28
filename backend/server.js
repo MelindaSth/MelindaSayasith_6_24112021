@@ -1,23 +1,21 @@
 const http = require('http');
 const app = require('./app');
-
+const dotenv = require('dotenv')
+dotenv.config()
 const normalizePort = val => {
-    const port = parseInt(val, 10);
-  
-    if (isNaN(port)) {
-      return val;
-    }
-    if (port >= 0) {
-      return port;
-    }
-    return false;
-};
+  const port = parseInt(val, 10);
 
-// Renvoie un port valide
-const port = normalizePort(process.env.PORT || '3000');
+  if (isNaN(port)) {
+    return val;
+  }
+  if (port >= 0) {
+    return port;
+  }
+  return false;
+};
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-// Recherche les erreurs et les gère de manière appropriée
 const errorHandler = error => {
   if (error.syscall !== 'listen') {
     throw error;
