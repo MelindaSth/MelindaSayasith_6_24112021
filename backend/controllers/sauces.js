@@ -25,7 +25,20 @@ exports.getOneSauce = (req, res, next) => {
     );
 };
 
+// Suppression de l'ancienne image lors d'un 'update'
+
 exports.modifySauce = (req, res, next) => {
+
+  if (req.file) {
+    Sauce.findOne({ _id: req.params.id })
+      .then((sauce) => {
+        const filename = sauce.imageUrl.split('/images/')[1];
+        fs.unlink(`images/${filename}`, () => {
+          console.log('Ancienne image supprimée')
+        })
+      })
+      .catch(error => res.status(400).json({ error }));
+  }
   const sauceObject = req.file ?
     {
       ...JSON.parse(req.body.sauce),
@@ -39,14 +52,14 @@ exports.modifySauce = (req, res, next) => {
 exports.deleteSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
-      const filename = sauce.imageUrl.split('/images/')[1];
+      const filename = sauce.imageUrl.split('/images/')[1]; // couper au niveau de image , avant position O , après position 1
       fs.unlink(`images/${filename}`, () => {
         Sauce.deleteOne({ _id: req.params.id })
           .then(() => res.status(200).json({ message: 'Sauce supprimée !' }))
           .catch((error) => res.status(400).json({ error: error }));
       });
     })
-    .catch(error => res.satatus(400).json({ error }));
+    .catch(error => res.status(400).json({ error }));
 };
 
 exports.likeDislikeSauce = (req, res, next) => {
@@ -61,7 +74,7 @@ exports.likeDislikeSauce = (req, res, next) => {
   Sauce.findOne({ _id: sauceId })
     .then((sauce) => {
       if (like === 1) {
-        if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) {
+        if (sauce.usersLiked.includes(userId) || sauce.usersDisliked.includes(userId)) { // est-ce que ds mon tab ya la valeur suivant ici userID
           res.status(401).json({ error: "L'utilisateur a déjà liké ou disliké" });
         } else {
           Sauce.updateOne({ _id: sauceId }, { $push: { usersLiked: userId }, $inc: { likes: +1 } })

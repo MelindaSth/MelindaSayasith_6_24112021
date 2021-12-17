@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 
+
+// avec le hash crée par bcrypt, on enregistre l'user dans la base de données
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
@@ -16,17 +18,20 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({ error }));
 };
 
+// on réccupère l'utilisateur qui correspond à l'email 
 exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
             if (!user) {
                 return res.status(401).json({ error: 'Utilisateur non trouvé !' });
             }
+            // on compare le mot de passe avec le hash enregistré
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
                     if (!valid) {
                         return res.status(401).json({ error: 'Mot de passe incorrect !' });
                     }
+                    // identifiant de l'utilisateur dans la base de données
                     res.status(200).json({
                         userId: user._id,
                         token: jwt.sign(

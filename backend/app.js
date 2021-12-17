@@ -42,6 +42,8 @@ app.use(limiter);
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/sauces', sauceRoutes);
+
+// on utilise le routeur userRoutes 
 app.use('/api/auth', userRoutes);
 
 module.exports = app;
